@@ -61,6 +61,20 @@ def event_4(args):
         print('Random number', x, "-", random.randint(1, 100))
 
 
+def create_blueprint(blueprints):
+    blueprint = random.choice(blueprints)
+
+    if blueprint.has_attribute('color'):
+        color = random.choice(
+            blueprint.get_attribute('color').recommended_values
+        )
+        blueprint.set_attribute('color', color)
+
+    blueprint.set_attribute('role_name', 'autopilot')
+
+    return blueprint
+
+
 def create_carla_client(host, port, timeout):
     '''Create a Carla client to be used in a Carla runtime script'''
     client = carla.Client(host, port)
