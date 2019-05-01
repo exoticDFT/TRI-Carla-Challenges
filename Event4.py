@@ -38,6 +38,14 @@ def parse_arguments():
         type=int,
         help='TCP port used for listening'
     )
+    argparser.add_argument(
+        '-t',
+        '--timeout',
+        metavar='T',
+        default=3.0,
+        type=float,
+        help='Timeout, in seconds, of the Carla client when contacting server'
+    )
 
     args = argparser.parse_args()
     args.description = argparser.description
