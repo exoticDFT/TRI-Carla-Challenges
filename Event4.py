@@ -54,11 +54,26 @@ def parse_arguments():
 
 
 def event_4(args):
-    # Use provided seed or system time if none is provided
-    random.seed(a=args.seed)
+    '''Create a scenario for the TRI Carla Challenge #4'''
+    # Connect to the Carla server
+    client = create_carla_client(args.host, args.port, args.timeout)
 
-    for x in range(10):
-        print('Random number', x, "-", random.randint(1, 100))
+    try:
+        world = client.get_world()
+        blueprints = world.get_blueprint_library().filter('vehicle.*')
+
+        # spawn_points = [34, 35, 41, 42, 46, 47, 55, 85, 86, 87, 88, 154]
+        spawn_points = world.get_map().get_spawn_points()
+        num_spawn_points = len(spawn_points)
+
+        # Use provided seed or system time if none is provided
+        random.seed(a=args.seed)
+
+        blueprint = create_blueprint(blueprints)
+        world.spawn_actor(blueprint, spawn_points[85])
+
+    finally:
+        pass
 
 
 def create_blueprint(blueprints):
