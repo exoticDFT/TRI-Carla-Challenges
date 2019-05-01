@@ -61,6 +61,14 @@ def event_4(args):
         print('Random number', x, "-", random.randint(1, 100))
 
 
+def create_carla_client(host, port, timeout):
+    '''Create a Carla client to be used in a Carla runtime script'''
+    client = carla.Client(host, port)
+    client.set_timeout(timeout)
+
+    return client
+
+
 # Define the main module
 def main():
     args = parse_arguments()
