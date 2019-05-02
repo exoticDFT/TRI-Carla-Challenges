@@ -54,6 +54,21 @@ def parse_arguments():
     return args
 
 
+def spawn_vehicle(world, blueprints, location, verbose=False):
+    blueprint = create_blueprint(blueprints)
+    actor = world.try_spawn_actor(blueprint, location)
+
+    if actor and "vehicle" in actor.type_id:
+        actor.set_autopilot(True)
+
+        if verbose:
+            print("Spawning vehicle")
+            print("   Id:", actor.id)
+            print("   Type Id:", actor.type_id)
+
+    return actor
+
+
 def event_4(args):
     '''Create a scenario for the TRI Carla Challenge #4'''
     # Connect to the Carla server
@@ -69,16 +84,11 @@ def event_4(args):
         # Use provided seed or system time if none is provided
         random.seed(a=args.seed)
 
-        blueprint = create_blueprint(blueprints)
         spawned_agents = []
 
         for i in sp_indices:
-            actor = world.try_spawn_actor(blueprint, spawn_points[i])
-
-            if actor:
-                print("Spawning actor", i, "with id:", actor.id)
-
-            spawned_agents.append(actor)
+            vehicle = spawn_vehicle(world, blueprints, spawn_points[i], True)
+            spawned_agents.append(vehicle)
             time.sleep(4.0)
 
     finally:
