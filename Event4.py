@@ -12,6 +12,7 @@ except ImportError:
 
 import argparse
 import random
+import time
 
 # Modules
 def parse_arguments():
@@ -62,15 +63,23 @@ def event_4(args):
         world = client.get_world()
         blueprints = world.get_blueprint_library().filter('vehicle.*')
 
-        # spawn_points = [34, 35, 41, 42, 46, 47, 55, 85, 86, 87, 88, 154]
         spawn_points = world.get_map().get_spawn_points()
-        num_spawn_points = len(spawn_points)
+        sp_indices = [114, 115, 116, 117, 118, 126, 127]
 
         # Use provided seed or system time if none is provided
         random.seed(a=args.seed)
 
         blueprint = create_blueprint(blueprints)
-        world.spawn_actor(blueprint, spawn_points[85])
+        spawned_agents = []
+
+        for i in sp_indices:
+            actor = world.try_spawn_actor(blueprint, spawn_points[i])
+
+            if actor:
+                print("Spawning actor", i, "with id:", actor.id)
+
+            spawned_agents.append(actor)
+            time.sleep(4.0)
 
     finally:
         pass
