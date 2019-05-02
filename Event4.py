@@ -7,7 +7,7 @@ try:
     import pygame
 except ImportError:
     raise RuntimeError(
-        'Cannot import pygame. Please make sure the pygame package is installed.'
+        'Cannot import pygame. Please verify the pygame package is installed.'
     )
 
 import argparse
@@ -69,6 +69,22 @@ def spawn_vehicle(world, blueprints, location, verbose=False):
     return actor
 
 
+def is_vehicle_in_range(
+    vehicle,
+    origin=carla.Location(0.0, 0.0, 0.0),
+    max_distance=100.0,
+    verbose=False
+):
+    dist_from_origin = vehicle.get_location().distance(origin)
+    if verbose:
+        print("Vehicle", vehicle.id, "is", dist_from_origin, "meters away.")
+
+    if dist_from_origin < max_distance:
+        return True
+    else:
+        return False
+    
+    
 def event_4(args):
     '''Create a scenario for the TRI Carla Challenge #4'''
     # Connect to the Carla server
