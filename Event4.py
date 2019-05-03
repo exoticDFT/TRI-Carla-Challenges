@@ -71,13 +71,15 @@ def spawn_vehicle(world, blueprints, location, verbose=False):
 
 def is_vehicle_in_range(
     vehicle,
+def is_actor_in_range(
+    actor,
     origin=carla.Location(0.0, 0.0, 0.0),
     max_distance=100.0,
     verbose=False
 ):
-    dist_from_origin = vehicle.get_location().distance(origin)
+    dist_from_origin = actor.get_location().distance(origin)
     if verbose:
-        print("Vehicle", vehicle.id, "is", dist_from_origin, "meters away.")
+        print("Actor", actor.id, "is", dist_from_origin, "meters away.")
 
     if dist_from_origin < max_distance:
         return True
