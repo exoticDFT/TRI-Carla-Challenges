@@ -122,12 +122,13 @@ def event_4(args):
         # Use provided seed or system time if none is provided
         random.seed(a=args.seed)
 
-        spawned_agents = []
-
         for i in sp_indices:
-            vehicle = spawn_vehicle(world, blueprints, spawn_points[i], True)
-            spawned_agents.append(vehicle)
+            spawn_vehicle(world, blueprints, spawn_points[i], True)
             time.sleep(4.0)
+
+        while time.time() < time.time() + 60*3:
+            remove_distant_actors(world, verbose=True)
+            time.sleep(5.0)
 
     finally:
         pass
