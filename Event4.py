@@ -69,8 +69,28 @@ def spawn_vehicle(world, blueprints, location, verbose=False):
     return actor
 
 
-def is_vehicle_in_range(
-    vehicle,
+def remove_distant_actors(world, actor_filter='vehicle.*', verbose=False):
+    circle_center = carla.Location(0, 0, 0) # map/circle center
+    dist_from_center = 100.0 # 100 meters from center
+
+    to_remove = [
+        actor
+        for actor in world.get_actors().filter(actor_filter)
+        if not is_actor_in_range(
+            actor, 
+            circle_center,
+            dist_from_center,
+            verbose
+        )
+    ]
+
+    for actor in to_remove:
+        actor.destroy()
+
+        if verbose:
+            print("Actor", actor.id, "removed from scenario.")
+
+
 def is_actor_in_range(
     actor,
     origin=carla.Location(0.0, 0.0, 0.0),
