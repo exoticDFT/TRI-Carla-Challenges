@@ -69,17 +69,20 @@ def spawn_vehicle(world, blueprints, location, verbose=False):
     return actor
 
 
-def remove_distant_actors(world, actor_filter='vehicle.*', verbose=False):
-    circle_center = carla.Location(0, 0, 0) # map/circle center
-    dist_from_center = 100.0 # 100 meters from center
-
+def remove_distant_actors(
+    world,
+    location=carla.Location(0, 0, 0),
+    max_distance=100.0,
+    actor_filter='vehicle.*',
+    verbose=False
+):
     to_remove = [
         actor
         for actor in world.get_actors().filter(actor_filter)
         if not is_actor_in_range(
             actor, 
-            circle_center,
-            dist_from_center,
+            location,
+            max_distance,
             verbose
         )
     ]
@@ -148,7 +151,11 @@ def create_blueprint(blueprints):
     return blueprint
 
 
-def create_carla_client(host, port, timeout):
+def create_carla_client(
+    host='127.0.0.1',
+    port=2000,
+    timeout=3.0
+):
     '''Create a Carla client to be used in a Carla runtime script'''
     client = carla.Client(host, port)
     client.set_timeout(timeout)
