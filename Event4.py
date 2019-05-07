@@ -161,24 +161,15 @@ def event_4(args):
     '''Create a scenario for the TRI Carla Challenge #4'''
     # Connect to the Carla server
     client = create_carla_client(args.host, args.port, args.timeout)
+        
+    # Use provided seed or system time if none is provided
+    random.seed(a=args.seed)
 
     try:
         world = client.get_world()
-        blueprints = world.get_blueprint_library().filter('vehicle.*')
-
-        spawn_points = world.get_map().get_spawn_points()
-        sp_indices = [114, 115, 116, 117, 118, 126, 127]
-
-        # Use provided seed or system time if none is provided
-        random.seed(a=args.seed)
-
-        for i in sp_indices:
-            spawn_vehicle(world, blueprints, spawn_points[i], True)
-            time.sleep(4.0)
-
-        while time.time() < time.time() + 60*3:
-            remove_distant_actors(world, verbose=True)
-            time.sleep(5.0)
+        
+        spawn_traffic_circle_agents(10, world, True)
+        remove_non_traffic_circle_agents(world, True)
 
     finally:
         pass
