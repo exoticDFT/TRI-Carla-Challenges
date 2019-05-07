@@ -108,6 +108,53 @@ def is_actor_in_range(
         return True
     else:
         return False
+
+
+def spawn_traffic_circle_agents(max_agents, world, verbose=False):
+    blueprints = world.get_blueprint_library().filter('vehicle.*')
+
+    spawn_points = world.get_map().get_spawn_points()
+    sp_indices = [114, 115, 116, 117, 118, 126, 127]
+
+    while True:
+        num_agents = len(world.get_actors().filter('vehicle.*'))
+
+        if num_agents < max_agents:
+            spawn_vehicle(
+                world,
+                blueprints,
+                spawn_points[random.choice(sp_indices)],
+                verbose
+            )
+            sleep_random_time(verbose=verbose)
+
+
+def remove_non_traffic_circle_agents(world, verbose=False):
+    circle_center = carla.Location(0, 0, 0) # map/circle center
+    dist_from_center = 100.0 # 100 meters from traffic circle center
+
+    while True:
+        remove_distant_actors(
+            world,
+            circle_center,
+            dist_from_center,
+            'vehicle.*',
+            verbose
+        )
+
+        if verbose:
+            print('Sleeping for 5.0 seconds.')
+            
+        time.sleep(5.0)
+
+
+def sleep_random_time(start=2.0, end=6.0, verbose=False):
+    sleep_time = random.uniform(start, end)
+
+    if verbose:
+        print('Sleeping for', sleep_time, 'seconds.')
+
+    time.sleep(sleep_time)
     
     
 def event_4(args):
