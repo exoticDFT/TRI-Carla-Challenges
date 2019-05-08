@@ -6,7 +6,23 @@ import time
 
 # modules
 def create_client(host='127.0.0.1', port=2000, timeout=3.0):
-    '''Create a Carla client to be used in a Carla runtime script'''
+    '''
+    Creates a Carla client to be used in a Carla runtime script.
+
+    Parameters
+    ----------
+    host : str
+        The string containing the host address.
+    port : int
+        The port in which the client will connect.
+    timeout : float
+        The time in which to wait for a repsonse from the server.
+
+    Returns
+    -------
+    carla.Client
+        A Carla client that is connected to the provided server.
+    '''
     client = carla.Client(host, port)
     client.set_timeout(timeout)
 
@@ -14,6 +30,20 @@ def create_client(host='127.0.0.1', port=2000, timeout=3.0):
 
 
 def create_random_blueprint(blueprints):
+    '''
+    Creates a random Carla actor blueprint based on some provided blueprint
+    library.
+
+    Parameters
+    ----------
+    blueprints : carla.BlueprintLibrary
+        A set of Carla blueprint templates used for creating a blueprint.
+
+    Returns
+    -------
+    carla.ActorBlueprint
+        A Carla blueprint to be used for a Carla actor.
+    '''
     blueprint = random.choice(blueprints)
 
     if blueprint.has_attribute('color'):
@@ -33,7 +63,28 @@ def is_actor_in_range(
     max_distance=100.0,
     verbose=False
 ):
+    '''
+    Checks if a Carla actor is within a certain distance from a location.
+
+    Parameters
+    ----------
+    actor : carla.Actor
+        The Carla actor in which to check its distance
+    origin : carla.Location
+        The origin location in which the actor's distance will be determined.
+    max_distance : float
+        The maximum distance the actor is from the origin used to evaluate
+        whether it is within the range.
+    verbose : bool
+        Used to determine whether some information should be displayed.
+
+    Returns
+    -------
+    bool
+        True if actor is in the range, False otherwise.
+    '''
     dist_from_origin = actor.get_location().distance(origin)
+
     if verbose:
         print("Actor", actor.id, "is", dist_from_origin, "meters away.")
 
@@ -50,6 +101,22 @@ def remove_distant_actors(
     actor_filter='vehicle.*',
     verbose=False
 ):
+    '''
+    Removes actors from the Carla world when outside a given area.
+
+    Parameters:
+    world : carla.World
+        The Carla world in which to remove actors.
+    location : carla.Location
+        The location used for determining the center of the area.
+    max_distance : float
+        The maximum distance an actor can be from the location center.
+    actor_filter : str
+        A string containing the filter to apply to the world's actor list.
+        Only actors with this filter will be removed.
+    verbose : bool
+        Used to determine whether some information should be displayed.
+    '''
     to_remove = [
         actor
         for actor in world.get_actors().filter(actor_filter)
@@ -69,6 +136,17 @@ def remove_distant_actors(
 
 
 def sleep_random_time(start=2.0, end=6.0, verbose=False):
+    '''
+    Sleeps the thread for some random time between the provided range.
+
+    Parameters:
+    start : float
+        The minimum time in which to sleep.
+    end : float
+        The maximum time in which to sleep.
+    verbose : bool
+        Used to determine whether some information should be displayed.
+    '''
     sleep_time = random.uniform(start, end)
 
     if verbose:
@@ -78,6 +156,26 @@ def sleep_random_time(start=2.0, end=6.0, verbose=False):
 
 
 def spawn_actor(world, blueprints, location, verbose=False):
+    '''
+    Trys to spawn an actor in the Carla world.
+
+    Parameters:
+    world : carla.World
+        The Carla world in which to spawn actors.
+    blueprints : carla.BlueprintLibrary
+        A set of Carla blueprint templates used for creating a blueprint.
+    location : carla.Location
+        The location used spawn the actor. Usually determined from 
+        carla.Map.get_spawn_points().
+    verbose : bool
+        Used to determine whether some information should be displayed.
+     
+    Returns
+    -------
+    carla.Actor
+        A Carla actor if Carla world was able to spawn an actor in the
+        provided location, otherwise None.
+    '''
     blueprint = create_random_blueprint(blueprints)
     actor = world.try_spawn_actor(blueprint, location)
 
