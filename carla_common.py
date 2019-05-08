@@ -11,11 +11,11 @@ def create_client(host='127.0.0.1', port=2000, timeout=3.0):
 
     Parameters
     ----------
-    host : str
+    host : str, optional
         The string containing the host address.
-    port : int
+    port : int, optional
         The port in which the client will connect.
-    timeout : float
+    timeout : float, optional
         The time in which to wait for a repsonse from the server.
 
     Returns
@@ -70,12 +70,12 @@ def is_actor_in_range(
     ----------
     actor : carla.Actor
         The Carla actor in which to check its distance
-    origin : carla.Location
+    origin : carla.Location, optional
         The origin location in which the actor's distance will be determined.
-    max_distance : float
+    max_distance : float, optional
         The maximum distance the actor is from the origin used to evaluate
         whether it is within the range.
-    verbose : bool
+    verbose : bool, optional
         Used to determine whether some information should be displayed.
 
     Returns
@@ -107,14 +107,14 @@ def remove_distant_actors(
     Parameters:
     world : carla.World
         The Carla world in which to remove actors.
-    location : carla.Location
+    location : carla.Location, optional
         The location used for determining the center of the area.
-    max_distance : float
+    max_distance : float, optional
         The maximum distance an actor can be from the location center.
-    actor_filter : str
+    actor_filter : str, optional
         A string containing the filter to apply to the world's actor list.
         Only actors with this filter will be removed.
-    verbose : bool
+    verbose : bool, optional
         Used to determine whether some information should be displayed.
     '''
     to_remove = [
@@ -167,7 +167,7 @@ def spawn_actor(world, blueprints, location, verbose=False):
     location : carla.Location
         The location used spawn the actor. Usually determined from 
         carla.Map.get_spawn_points().
-    verbose : bool
+    verbose : bool, optional
         Used to determine whether some information should be displayed.
      
     Returns
