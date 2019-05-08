@@ -88,7 +88,7 @@ def is_actor_in_range(
     if verbose:
         print("Actor", actor.id, "is", dist_from_origin, "meters away.")
 
-    if dist_from_origin < max_distance:
+    if dist_from_origin <= max_distance:
         return True
     else:
         return False
