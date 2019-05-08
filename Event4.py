@@ -1,8 +1,9 @@
 #!/bin/env/python
 
 # Import modules
-import carla
 import carla_common as cc
+
+import carla
 
 try:
     import pygame
@@ -17,6 +18,14 @@ import time
 
 # Modules
 def parse_arguments():
+    '''
+    The argument parser used for the TRI Carla Challenge Event 4 scenario.
+
+    Returns
+    -------
+    list
+        The list of parsed arguments to be used throughout the program.
+    '''
     argparser = argparse.ArgumentParser(
         description='TRI Carla Challenge - Event 4',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
@@ -56,6 +65,18 @@ def parse_arguments():
 
 
 def spawn_traffic_circle_agents(max_agents, world, verbose=False):
+    '''
+    Continuously spawns agents around the traffic circle in Town03.
+
+    Parameters
+    ----------
+    max_agents : int
+        The maximum number of agents allowed in the scenario at any given time.
+    world : carla.World
+        The Carla world in which to spawn actors.
+    verbose : bool, optional
+        Used to determine whether some information should be displayed.
+    '''
     blueprints = world.get_blueprint_library().filter('vehicle.*')
 
     spawn_points = world.get_map().get_spawn_points()
@@ -75,6 +96,17 @@ def spawn_traffic_circle_agents(max_agents, world, verbose=False):
 
 
 def remove_non_traffic_circle_agents(world, verbose=False):
+    '''
+    Monitors the Carla world and actively removes any agents that have
+    wondered too far away from the traffic circle in Town03.
+
+    Parameters
+    ----------
+    world : carla.World
+        The Carla world in which to remove actors.
+    verbose : bool, optional
+        Used to determine whether some information should be displayed.
+    '''
     circle_center = carla.Location(0, 0, 0) # map/circle center
     dist_from_center = 100.0 # 100 meters from traffic circle center
 
@@ -94,7 +126,14 @@ def remove_non_traffic_circle_agents(world, verbose=False):
 
 
 def event_4(args):
-    '''Create a scenario for the TRI Carla Challenge #4'''
+    '''
+    Creates a scenario for the TRI Carla Challenge #4.
+
+    Parameters
+    ----------
+    args : list
+        A list of arguments used for the scenario generation.
+    '''
     # Connect to the Carla server
     client = cc.create_client(args.host, args.port, args.timeout)
         
@@ -113,6 +152,9 @@ def event_4(args):
 
 # Define the main module
 def main():
+    '''
+    The main function for the scenario generator.
+    '''
     args = parse_arguments()
     event_4(args)
 
