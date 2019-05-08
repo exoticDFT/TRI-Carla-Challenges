@@ -69,17 +69,20 @@ def spawn_vehicle(world, blueprints, location, verbose=False):
     return actor
 
 
-def remove_distant_actors(world, actor_filter='vehicle.*', verbose=False):
-    circle_center = carla.Location(0, 0, 0) # map/circle center
-    dist_from_center = 100.0 # 100 meters from center
-
+def remove_distant_actors(
+    world,
+    location=carla.Location(0, 0, 0),
+    max_distance=100.0,
+    actor_filter='vehicle.*',
+    verbose=False
+):
     to_remove = [
         actor
         for actor in world.get_actors().filter(actor_filter)
         if not is_actor_in_range(
             actor, 
-            circle_center,
-            dist_from_center,
+            location,
+            max_distance,
             verbose
         )
     ]
@@ -105,30 +108,68 @@ def is_actor_in_range(
         return True
     else:
         return False
+
+
+def spawn_traffic_circle_agents(max_agents, world, verbose=False):
+    blueprints = world.get_blueprint_library().filter('vehicle.*')
+
+    spawn_points = world.get_map().get_spawn_points()
+    sp_indices = [114, 115, 116, 117, 118, 126, 127]
+
+    while True:
+        num_agents = len(world.get_actors().filter('vehicle.*'))
+
+        if num_agents < max_agents:
+            spawn_vehicle(
+                world,
+                blueprints,
+                spawn_points[random.choice(sp_indices)],
+                verbose
+            )
+            sleep_random_time(verbose=verbose)
+
+
+def remove_non_traffic_circle_agents(world, verbose=False):
+    circle_center = carla.Location(0, 0, 0) # map/circle center
+    dist_from_center = 100.0 # 100 meters from traffic circle center
+
+    while True:
+        remove_distant_actors(
+            world,
+            circle_center,
+            dist_from_center,
+            'vehicle.*',
+            verbose
+        )
+
+        if verbose:
+            print('Sleeping for 5.0 seconds.')
+            
+        time.sleep(5.0)
+
+
+def sleep_random_time(start=2.0, end=6.0, verbose=False):
+    sleep_time = random.uniform(start, end)
+
+    if verbose:
+        print('Sleeping for', sleep_time, 'seconds.')
+
+    time.sleep(sleep_time)
     
     
 def event_4(args):
     '''Create a scenario for the TRI Carla Challenge #4'''
     # Connect to the Carla server
     client = create_carla_client(args.host, args.port, args.timeout)
+        
+    # Use provided seed or system time if none is provided
+    random.seed(a=args.seed)
 
     try:
         world = client.get_world()
-        blueprints = world.get_blueprint_library().filter('vehicle.*')
-
-        spawn_points = world.get_map().get_spawn_points()
-        sp_indices = [114, 115, 116, 117, 118, 126, 127]
-
-        # Use provided seed or system time if none is provided
-        random.seed(a=args.seed)
-
-        for i in sp_indices:
-            spawn_vehicle(world, blueprints, spawn_points[i], True)
-            time.sleep(4.0)
-
-        while time.time() < time.time() + 60*3:
-            remove_distant_actors(world, verbose=True)
-            time.sleep(5.0)
+        
+        spawn_traffic_circle_agents(10, world, True)
+        remove_non_traffic_circle_agents(world, True)
 
     finally:
         pass
@@ -148,7 +189,11 @@ def create_blueprint(blueprints):
     return blueprint
 
 
-def create_carla_client(host, port, timeout):
+def create_carla_client(
+    host='127.0.0.1',
+    port=2000,
+    timeout=3.0
+):
     '''Create a Carla client to be used in a Carla runtime script'''
     client = carla.Client(host, port)
     client.set_timeout(timeout)
