@@ -155,7 +155,7 @@ def sleep_random_time(start=2.0, end=6.0, verbose=False):
     time.sleep(sleep_time)
 
 
-def spawn_actor(world, blueprints, location, verbose=False):
+def spawn_actor(world, blueprints, transform, verbose=False):
     '''
     Trys to spawn an actor in the Carla world.
 
@@ -164,8 +164,8 @@ def spawn_actor(world, blueprints, location, verbose=False):
         The Carla world in which to spawn actors.
     blueprints : carla.BlueprintLibrary
         A set of Carla blueprint templates used for creating a blueprint.
-    location : carla.Location
-        The location used spawn the actor. Usually determined from 
+    transform : carla.Transform
+        The transform (pose) used spawn the actor. Usually determined from 
         carla.Map.get_spawn_points().
     verbose : bool, optional
         Used to determine whether some information should be displayed.
@@ -174,17 +174,19 @@ def spawn_actor(world, blueprints, location, verbose=False):
     -------
     carla.Actor
         A Carla actor if Carla world was able to spawn an actor in the
-        provided location, otherwise None.
+        provided transform, otherwise None.
     '''
     blueprint = create_random_blueprint(blueprints)
-    actor = world.try_spawn_actor(blueprint, location)
+    actor = world.try_spawn_actor(blueprint, transform)
 
-    if actor and "vehicle" in actor.type_id:
-        actor.set_autopilot(True)
+    if actor:
+        if "vehicle" in actor.type_id:
+            actor.set_autopilot(True)
 
         if verbose:
-            print("Spawning vehicle")
+            print("Spawning actor")
             print("   Id:", actor.id)
             print("   Type Id:", actor.type_id)
+            print("   Transform:", transform)
 
     return actor
