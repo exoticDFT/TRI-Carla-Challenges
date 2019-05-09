@@ -1,6 +1,8 @@
 #!/bin/env/python
 
 # Import modules
+import util.carla_common as cc
+
 import carla
 
 try:
@@ -16,6 +18,14 @@ import time
 
 # Modules
 def parse_arguments():
+    '''
+    The argument parser used for the TRI Carla Challenge Event 4 scenario.
+
+    Returns
+    -------
+    list
+        The list of parsed arguments to be used throughout the program.
+    '''
     argparser = argparse.ArgumentParser(
         description='TRI Carla Challenge - Event 4',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
@@ -54,63 +64,19 @@ def parse_arguments():
     return args
 
 
-def spawn_vehicle(world, blueprints, location, verbose=False):
-    blueprint = create_blueprint(blueprints)
-    actor = world.try_spawn_actor(blueprint, location)
-
-    if actor and "vehicle" in actor.type_id:
-        actor.set_autopilot(True)
-
-        if verbose:
-            print("Spawning vehicle")
-            print("   Id:", actor.id)
-            print("   Type Id:", actor.type_id)
-
-    return actor
-
-
-def remove_distant_actors(
-    world,
-    location=carla.Location(0, 0, 0),
-    max_distance=100.0,
-    actor_filter='vehicle.*',
-    verbose=False
-):
-    to_remove = [
-        actor
-        for actor in world.get_actors().filter(actor_filter)
-        if not is_actor_in_range(
-            actor, 
-            location,
-            max_distance,
-            verbose
-        )
-    ]
-
-    for actor in to_remove:
-        actor.destroy()
-
-        if verbose:
-            print("Actor", actor.id, "removed from scenario.")
-
-
-def is_actor_in_range(
-    actor,
-    origin=carla.Location(0.0, 0.0, 0.0),
-    max_distance=100.0,
-    verbose=False
-):
-    dist_from_origin = actor.get_location().distance(origin)
-    if verbose:
-        print("Actor", actor.id, "is", dist_from_origin, "meters away.")
-
-    if dist_from_origin < max_distance:
-        return True
-    else:
-        return False
-
-
 def spawn_traffic_circle_agents(max_agents, world, verbose=False):
+    '''
+    Continuously spawns agents around the traffic circle in Town03.
+
+    Parameters
+    ----------
+    max_agents : int
+        The maximum number of agents allowed in the scenario at any given time.
+    world : carla.World
+        The Carla world in which to spawn actors.
+    verbose : bool, optional
+        Used to determine whether some information should be displayed.
+    '''
     blueprints = world.get_blueprint_library().filter('vehicle.*')
 
     spawn_points = world.get_map().get_spawn_points()
@@ -120,21 +86,32 @@ def spawn_traffic_circle_agents(max_agents, world, verbose=False):
         num_agents = len(world.get_actors().filter('vehicle.*'))
 
         if num_agents < max_agents:
-            spawn_vehicle(
+            cc.spawn_actor(
                 world,
                 blueprints,
                 spawn_points[random.choice(sp_indices)],
                 verbose
             )
-            sleep_random_time(verbose=verbose)
+            cc.sleep_random_time(verbose=verbose)
 
 
 def remove_non_traffic_circle_agents(world, verbose=False):
+    '''
+    Monitors the Carla world and actively removes any agents that have
+    wondered too far away from the traffic circle in Town03.
+
+    Parameters
+    ----------
+    world : carla.World
+        The Carla world in which to remove actors.
+    verbose : bool, optional
+        Used to determine whether some information should be displayed.
+    '''
     circle_center = carla.Location(0, 0, 0) # map/circle center
     dist_from_center = 100.0 # 100 meters from traffic circle center
 
     while True:
-        remove_distant_actors(
+        cc.remove_distant_actors(
             world,
             circle_center,
             dist_from_center,
@@ -148,19 +125,17 @@ def remove_non_traffic_circle_agents(world, verbose=False):
         time.sleep(5.0)
 
 
-def sleep_random_time(start=2.0, end=6.0, verbose=False):
-    sleep_time = random.uniform(start, end)
-
-    if verbose:
-        print('Sleeping for', sleep_time, 'seconds.')
-
-    time.sleep(sleep_time)
-    
-    
 def event_4(args):
-    '''Create a scenario for the TRI Carla Challenge #4'''
+    '''
+    Creates a scenario for the TRI Carla Challenge #4.
+
+    Parameters
+    ----------
+    args : list
+        A list of arguments used for the scenario generation.
+    '''
     # Connect to the Carla server
-    client = create_carla_client(args.host, args.port, args.timeout)
+    client = cc.create_client(args.host, args.port, args.timeout)
         
     # Use provided seed or system time if none is provided
     random.seed(a=args.seed)
@@ -175,34 +150,11 @@ def event_4(args):
         pass
 
 
-def create_blueprint(blueprints):
-    blueprint = random.choice(blueprints)
-
-    if blueprint.has_attribute('color'):
-        color = random.choice(
-            blueprint.get_attribute('color').recommended_values
-        )
-        blueprint.set_attribute('color', color)
-
-    blueprint.set_attribute('role_name', 'autopilot')
-
-    return blueprint
-
-
-def create_carla_client(
-    host='127.0.0.1',
-    port=2000,
-    timeout=3.0
-):
-    '''Create a Carla client to be used in a Carla runtime script'''
-    client = carla.Client(host, port)
-    client.set_timeout(timeout)
-
-    return client
-
-
 # Define the main module
 def main():
+    '''
+    The main function for the scenario generator.
+    '''
     args = parse_arguments()
     event_4(args)
 
