@@ -1,7 +1,7 @@
 #!/bin/env/python
 
 # Import modules
-import carla_common as cc
+import util.carla_common as cc
 
 import carla
 
