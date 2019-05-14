@@ -18,6 +18,7 @@ python Scripts/remove_actors.py
 
 ### Release notes
 #### 0.1
+- The release has only been tested with Python 3.5, but is expected to work with 3.5+.
 - Creates a utilities library which provides several useful utility functions that can be used throughout your Carla client script.
 - Adds a Scripts directory for holding various scripts that can be used for testing ego vehicle implementations. Specifically,
   - Event4.py: Used for running an initial scenario for the fourth event.
