@@ -1,0 +1,4 @@
+networkx
+numpy
+pygame
+-e git+git://github.com/carla-simulator/carla@0.9.5#egg=carla
