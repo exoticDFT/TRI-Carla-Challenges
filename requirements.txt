@@ -1,0 +1,4 @@
+networkx
+numpy
+pygame
+carla==0.9.5
