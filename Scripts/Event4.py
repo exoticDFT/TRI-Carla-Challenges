@@ -80,7 +80,9 @@ def spawn_traffic_circle_agents(max_agents, world, verbose=False):
     blueprints = world.get_blueprint_library().filter('vehicle.*')
 
     spawn_points = world.get_map().get_spawn_points()
-    sp_indices = [114, 115, 116, 117, 118, 126, 127]
+    sp_indices = [
+        8, 112, 113, 120, 121, 122, 123, 210, 211, 218, 219, 229, 247, 248
+    ]
 
     while True:
         num_agents = len(world.get_actors().filter('vehicle.*'))
