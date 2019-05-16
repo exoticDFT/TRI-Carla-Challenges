@@ -2,6 +2,7 @@
 
 # Import modules
 import util.carla_common as cc
+import util.world
 
 import carla
 
@@ -119,7 +120,7 @@ def remove_non_traffic_circle_agents(world, verbose=False):
     circle_center = carla.Location(0, 0, 0) # map/circle center
     dist_from_center = 100.0 # 100 meters from traffic circle center
 
-    cc.remove_distant_actors(
+    util.world.remove_distant_actors(
         world,
         circle_center,
         dist_from_center,

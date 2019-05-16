@@ -94,47 +94,6 @@ def is_actor_in_range(
         return False
 
 
-def remove_distant_actors(
-    world,
-    location=carla.Location(0, 0, 0),
-    max_distance=100.0,
-    actor_filter='vehicle.*',
-    verbose=False
-):
-    '''
-    Removes actors from the Carla world when outside a given area.
-
-    Parameters:
-    world : carla.World
-        The Carla world in which to remove actors.
-    location : carla.Location, optional
-        The location used for determining the center of the area.
-    max_distance : float, optional
-        The maximum distance an actor can be from the location center.
-    actor_filter : str, optional
-        A string containing the filter to apply to the world's actor list.
-        Only actors with this filter will be removed.
-    verbose : bool, optional
-        Used to determine whether some information should be displayed.
-    '''
-    to_remove = [
-        actor
-        for actor in world.get_actors().filter(actor_filter)
-        if not is_actor_in_range(
-            actor, 
-            location,
-            max_distance,
-            verbose
-        )
-    ]
-
-    for actor in to_remove:
-        actor.destroy()
-
-        if verbose:
-            print("Actor", actor.id, "removed from scenario.")
-
-
 def sleep_random_time(start=2.0, end=6.0, verbose=False):
     '''
     Sleeps the thread for some random time between the provided range.
