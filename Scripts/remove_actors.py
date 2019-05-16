@@ -13,6 +13,5 @@ def main():
     while True:
         Event4.remove_non_traffic_circle_agents(world, verbose=True)
         print('Total actors remaining:', len(world.get_actors().filter('vehicle.*')))
-        time.sleep(5.0)
 
 main()

@@ -64,7 +64,7 @@ def parse_arguments():
     return args
 
 
-def spawn_traffic_circle_agents(max_agents, world, verbose=False):
+def spawn_traffic_circle_agents(max_agents, actors, world, verbose=False):
     '''
     Continuously spawns agents around the traffic circle in Town03.
 
@@ -72,6 +72,8 @@ def spawn_traffic_circle_agents(max_agents, world, verbose=False):
     ----------
     max_agents : int
         The maximum number of agents allowed in the scenario at any given time.
+    actors : list
+        A list of actors that have been spawned into the Carla world
     world : carla.World
         The Carla world in which to spawn actors.
     verbose : bool, optional
@@ -84,17 +86,22 @@ def spawn_traffic_circle_agents(max_agents, world, verbose=False):
         8, 112, 113, 120, 121, 122, 123, 210, 211, 218, 219, 229, 247, 248
     ]
 
-    while True:
-        num_agents = len(world.get_actors().filter('vehicle.*'))
+    # num_agents = len(actors)
+    num_agents = len(world.get_actors().filter('vehicle.*'))
 
-        if num_agents < max_agents:
+    while num_agents < max_agents:
+        actors.append(
             cc.spawn_actor(
                 world,
                 blueprints,
                 spawn_points[random.choice(sp_indices)],
                 verbose
             )
-            cc.sleep_random_time(verbose=verbose)
+        )
+
+        cc.sleep_random_time(verbose=verbose)
+        # num_agents = len(actors)
+        num_agents = len(world.get_actors().filter('vehicle.*'))
 
 
 def remove_non_traffic_circle_agents(world, verbose=False):
@@ -112,19 +119,18 @@ def remove_non_traffic_circle_agents(world, verbose=False):
     circle_center = carla.Location(0, 0, 0) # map/circle center
     dist_from_center = 100.0 # 100 meters from traffic circle center
 
-    while True:
-        cc.remove_distant_actors(
-            world,
-            circle_center,
-            dist_from_center,
-            'vehicle.*',
-            verbose
-        )
+    cc.remove_distant_actors(
+        world,
+        circle_center,
+        dist_from_center,
+        'vehicle.*',
+        verbose
+    )
 
-        if verbose:
-            print('Sleeping for 5.0 seconds.')
-            
-        time.sleep(5.0)
+    if verbose:
+        print('Sleeping for 5.0 seconds.')
+        
+    time.sleep(5.0)
 
 
 def event_4(args):
@@ -144,9 +150,11 @@ def event_4(args):
 
     try:
         world = client.get_world()
-        
-        spawn_traffic_circle_agents(10, world, True)
-        remove_non_traffic_circle_agents(world, True)
+        actors = []
+
+        while True:
+            spawn_traffic_circle_agents(10, actors, world, True)
+            # remove_non_traffic_circle_agents(world, True)
 
     finally:
         pass
