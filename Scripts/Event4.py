@@ -87,51 +87,47 @@ def spawn_traffic_circle_agents(max_agents, actors, world, verbose=False):
         8, 112, 113, 120, 121, 122, 123, 210, 211, 218, 219, 229, 247, 248
     ]
 
-    # num_agents = len(actors)
-    num_agents = len(world.get_actors().filter('vehicle.*'))
+    num_agents = len(actors)
 
     while num_agents < max_agents:
-        actors.append(
-            cc.spawn_actor(
-                world,
-                blueprints,
-                spawn_points[random.choice(sp_indices)],
-                verbose
-            )
+        actor = cc.spawn_actor(
+            world,
+            blueprints,
+            spawn_points[random.choice(sp_indices)],
+            verbose
         )
 
+        if actor:
+            actors.append(actor)
+
         cc.sleep_random_time(verbose=verbose)
-        # num_agents = len(actors)
-        num_agents = len(world.get_actors().filter('vehicle.*'))
+        num_agents = len(actors)
 
 
-def remove_non_traffic_circle_agents(world, verbose=False):
+def remove_non_traffic_circle_agents(actors, verbose=False):
     '''
-    Monitors the Carla world and actively removes any agents that have
+    Monitors the Carla scene and actively removes the agents that have
     wondered too far away from the traffic circle in Town03.
 
     Parameters
     ----------
-    world : carla.World
-        The Carla world in which to remove actors.
+    actors : list
+        A list of actors that have been spawned into the Carla world
     verbose : bool, optional
         Used to determine whether some information should be displayed.
     '''
     circle_center = carla.Location(0, 0, 0) # map/circle center
     dist_from_center = 100.0 # 100 meters from traffic circle center
 
-    util.world.remove_distant_actors(
-        world,
-        circle_center,
-        dist_from_center,
-        'vehicle.*',
-        verbose
-    )
-
-    if verbose:
-        print('Sleeping for 5.0 seconds.')
-        
-    time.sleep(5.0)
+    for actor in actors:
+        if not cc.is_actor_in_range(
+            actor,
+            circle_center,
+            dist_from_center,
+            verbose
+        ):
+            actor.destroy()
+            actors.remove(actor)
 
 
 def event_4(args):
@@ -155,7 +151,7 @@ def event_4(args):
 
         while True:
             spawn_traffic_circle_agents(10, actors, world, True)
-            # remove_non_traffic_circle_agents(world, True)
+            remove_non_traffic_circle_agents(actors, True)
 
     finally:
         pass

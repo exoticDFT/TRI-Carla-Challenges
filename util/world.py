@@ -65,3 +65,9 @@ def remove_distant_actors(
 
         if verbose:
             print("Actor", actor.id, "removed from scenario.")
+
+    if verbose:
+        print(
+            'Total actors remaining:',
+            len(world.get_actors().filter('vehicle.*'))
+        )

@@ -116,7 +116,7 @@ def sleep_random_time(start=2.0, end=6.0, verbose=False):
 
 def spawn_actor(world, blueprints, transform, verbose=False):
     '''
-    Trys to spawn an actor in the Carla world.
+    Tries to spawn an actor in the Carla world.
 
     Parameters:
     world : carla.World
