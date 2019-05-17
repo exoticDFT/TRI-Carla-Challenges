@@ -8,21 +8,26 @@ When the Carla server is running, to run the scenario, simply run
 python Scripts/Event4.py
 ```
 
-This will run the scenario with random parameters based on the system time when calling the python script. There are several options one can add to the runtime via arguments to the script. These arguments include connection to different host and port configurations for a server instance, a random seed to run the scenario with the same environment, and timeout for connections with the server. For more information of the available arguments, you can add the `--help` argument to the above command to display the help menu for the script. For this release, to have the scenario continuously generate vehicles around the traffic circle, you must also run the `remove_actors.py` script at the same time as `Event4.py`. This can be done before or after you run the Event4 script, but after the Carla server has been created.
+This will run the scenario with random parameters based on the system time when calling the python script. There are several options one can add to the runtime via arguments to the script. These arguments include connection to different host and port configurations for a server instance, a random seed to run a pseudorandom scenario, and timeout for connections with the server. For more information of the available arguments, you can add the `--help` argument to the above command to display the help menu for the script. For this release, you will have to start your ego vehicle script manually. This should be done shortly after the `Event4` script is run. Just call your script (let's say it's called `ego_vehicle.py`) in a terminal where the script is contained.
 
 ```bash
-python Scripts/remove_actors.py
+python ego_vehicle.py
 ```
 
 ---
 
 ### Release notes
+#### 0.2
+- Updates Event4.py script to handle the overall agent handling for the scenario. No need to call remove_actors.py unless you want to clear out the entire world of all vehicles.
+- Modifies remove_actors.py to remove all vehicles from the Carla server, including the ego vehicle.
 #### 0.1
-- The release has only been tested with Python 3.5, but is expected to work with 3.5+.
 - Creates a utilities library which provides several useful utility functions that can be used throughout your Carla client script.
 - Adds a Scripts directory for holding various scripts that can be used for testing ego vehicle implementations. Specifically,
   - Event4.py: Used for running an initial scenario for the fourth event.
   - remove_actors.py: Used for removing vehicles from the Carla server that are no longer within 100 meters of the traffic circle in Town03.
+
+#### General
+- The releases have only been tested with Python 3.5, but is expected to work with 3.5+.
 
 ---
 
