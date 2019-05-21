@@ -1,3 +1,4 @@
+import util.actor
 import util.carla_common
 
 import carla
@@ -52,7 +53,7 @@ def remove_distant_actors(
     to_remove = [
         actor
         for actor in world.get_actors().filter(actor_filter)
-        if not util.carla_common.is_actor_in_range(
+        if not util.actor.in_range(
             actor, 
             location,
             max_distance,
@@ -94,7 +95,7 @@ def spawn_actor(world, blueprints, transform, verbose=False):
         A Carla actor if Carla world was able to spawn an actor in the
         provided transform, otherwise None.
     '''
-    blueprint = util.carla_common.create_random_blueprint(blueprints)
+    blueprint = util.actor.create_random_blueprint(blueprints)
     actor = world.try_spawn_actor(blueprint, transform)
 
     if actor:

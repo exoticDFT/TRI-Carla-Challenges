@@ -1,6 +1,7 @@
 #!/bin/env/python
 
 # Import modules
+import util.actor
 import util.carla_common as cc
 import util.world
 
@@ -132,7 +133,7 @@ def remove_non_traffic_circle_agents(actors, verbose=False):
         print("Number of agents:", len(actors))
 
     for actor in actors:
-        if not cc.is_actor_in_range(
+        if not util.actor.in_range(
             actor,
             circle_center,
             dist_from_center,
