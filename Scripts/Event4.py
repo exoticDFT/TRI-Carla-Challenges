@@ -2,6 +2,7 @@
 
 # Import modules
 import util.actor
+import util.client
 import util.carla_common as cc
 import util.world
 
@@ -156,7 +157,7 @@ def event_4(args):
         A list of arguments used for the scenario generation.
     '''
     # Connect to the Carla server
-    client = cc.create_client(args.host, args.port, args.timeout)
+    client = util.client.create(args.host, args.port, args.timeout)
         
     # Use provided seed or system time if none is provided
     random.seed(a=args.seed)
