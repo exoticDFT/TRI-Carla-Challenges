@@ -99,7 +99,7 @@ def spawn_traffic_circle_agents(max_agents, actors, world, verbose=False):
     num_agents = len(actors)
 
     while num_agents < max_agents:
-        actor = cc.spawn_actor(
+        actor = util.world.spawn_actor(
             world,
             blueprints,
             spawn_points[random.choice(sp_indices)],

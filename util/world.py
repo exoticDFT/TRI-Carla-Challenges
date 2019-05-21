@@ -71,3 +71,40 @@ def remove_distant_actors(
             'Total actors remaining:',
             len(world.get_actors().filter('vehicle.*'))
         )
+
+
+def spawn_actor(world, blueprints, transform, verbose=False):
+    '''
+    Tries to spawn an actor in the Carla world.
+
+    Parameters:
+    world : carla.World
+        The Carla world in which to spawn actors.
+    blueprints : carla.BlueprintLibrary
+        A set of Carla blueprint templates used for creating a blueprint.
+    transform : carla.Transform
+        The transform (pose) used spawn the actor. Usually determined from 
+        carla.Map.get_spawn_points().
+    verbose : bool, optional
+        Used to determine whether some information should be displayed.
+     
+    Returns
+    -------
+    carla.Actor
+        A Carla actor if Carla world was able to spawn an actor in the
+        provided transform, otherwise None.
+    '''
+    blueprint = util.carla_common.create_random_blueprint(blueprints)
+    actor = world.try_spawn_actor(blueprint, transform)
+
+    if actor:
+        if "vehicle" in actor.type_id:
+            actor.set_autopilot(True)
+
+        if verbose:
+            print("Spawning actor")
+            print("   Id:", actor.id)
+            print("   Type Id:", actor.type_id)
+            print("   Transform:", transform)
+
+    return actor
