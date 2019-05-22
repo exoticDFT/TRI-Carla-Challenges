@@ -81,7 +81,7 @@ def spawn_traffic_circle_agents(max_agents, world, verbose=False):
 
     spawn_points = world.get_map().get_spawn_points()
     sp_indices = [
-        8, 112, 113, 120, 121, 122, 123, 210, 211, 218, 219, 229, 247, 248
+        8, 9, 47, 48, 55, 56, 57, 58, 145, 146, 153, 154, 164, 182, 183
     ]
 
     while True:
