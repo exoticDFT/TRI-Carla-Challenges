@@ -32,16 +32,18 @@ def parse_arguments():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     argparser.add_argument(
-        '-s',
-        '--seed',
-        default=None,
-        help='The random number seed used during scenario generation'
-    )
-    argparser.add_argument(
         '--host',
         metavar='H',
         default='127.0.0.1',
         help='The ip address of the host server'
+    )
+    argparser.add_argument(
+        '-n',
+        '--num-agents',
+        metavar='N',
+        default=10,
+        type=int,
+        help='The maximum number of non-player agents in the scenario'
     )
     argparser.add_argument(
         '--port',
@@ -49,6 +51,13 @@ def parse_arguments():
         default=2000,
         type=int,
         help='TCP port used for listening'
+    )
+    argparser.add_argument(
+        '-s',
+        '--seed',
+        metavar='S',
+        default=None,
+        help='The random number seed used during scenario generation'
     )
     argparser.add_argument(
         '-t',
@@ -119,6 +128,9 @@ def remove_non_traffic_circle_agents(actors, verbose=False):
     circle_center = carla.Location(0, 0, 0) # map/circle center
     dist_from_center = 100.0 # 100 meters from traffic circle center
 
+    if verbose:
+        print("Number of agents:", len(actors))
+
     for actor in actors:
         if not cc.is_actor_in_range(
             actor,
@@ -128,6 +140,9 @@ def remove_non_traffic_circle_agents(actors, verbose=False):
         ):
             actor.destroy()
             actors.remove(actor)
+
+    if verbose:
+        print("Number of agents after removal:", len(actors))
 
 
 def event_4(args):
@@ -150,7 +165,7 @@ def event_4(args):
         actors = []
 
         while True:
-            spawn_traffic_circle_agents(10, actors, world, True)
+            spawn_traffic_circle_agents(args.num_agents, actors, world, True)
             remove_non_traffic_circle_agents(actors, True)
 
     finally:
