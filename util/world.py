@@ -1,5 +1,4 @@
 import util.actor
-import util.carla_common
 
 import carla
 

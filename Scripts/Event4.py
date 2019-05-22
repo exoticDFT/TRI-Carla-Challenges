@@ -3,7 +3,7 @@
 # Import modules
 import util.actor
 import util.client
-import util.carla_common as cc
+import util.common
 import util.world
 
 import carla
@@ -111,7 +111,7 @@ def spawn_traffic_circle_agents(max_agents, actors, world, verbose=False):
         if actor:
             actors.append(actor)
 
-        cc.sleep_random_time(verbose=verbose)
+        util.common.sleep_random_time(verbose=verbose)
         num_agents = len(actors)
 
 

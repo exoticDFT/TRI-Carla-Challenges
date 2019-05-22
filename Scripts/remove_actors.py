@@ -1,11 +1,8 @@
 #!/bin/env/python
  
 import Event4
-import util.carla_common
 import util.client
 import util.world
-
-import time
 
 def main():
     client = util.client.create()
