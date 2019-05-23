@@ -33,16 +33,18 @@ python3 ego_vehicle.py
 
 ### Release notes
 #### 0.2
-- Updates Event4.py script to handle the overall agent handling for the scenario. No need to call remove_actors.py unless you want to clear out the entire world of all vehicles.
-- Modifies remove_actors.py to remove all vehicles from the Carla server, including the ego vehicle.
+- Updates `Event4.py` script to handle the overall agent handling for the scenario. No need to call `remove_actors.py` unless you want to clear out the entire world of all vehicles.
+- Modifies `remove_actors.py` to remove all vehicles from the Carla server, including any ego vehicles.
+- Adds `--num-agents` argument to `Event4.py` to specify the total number of ambient vehicles used in the scenario (default is 10 when not used.)
+- Replaces the large `carla_common` module with several smaller and more specific modules.
 #### 0.1
 - Creates a utilities library which provides several useful utility functions that can be used throughout your Carla client script.
 - Adds a Scripts directory for holding various scripts that can be used for testing ego vehicle implementations. Specifically,
-  - Event4.py: Used for running an initial scenario for the fourth event.
-  - remove_actors.py: Used for removing vehicles from the Carla server that are no longer within 100 meters of the traffic circle in Town03.
+  - `Event4.py`: Used for running an initial scenario for the fourth event.
+  - `remove_actors.py`: Used for removing vehicles from the Carla server that are no longer within 100 meters of the traffic circle in Town03.
 
 #### General
-- The releases have only been tested with Python 3.5, but is expected to work with 3.5+.
+- The releases have only been fully tested with Python 3.5, but is expected to work with 3.5+.
 
 ---
 
