@@ -1,7 +1,10 @@
 #!/bin/env/python
 
 # Import modules
-import util.carla_common as cc
+import util.actor
+import util.client
+import util.common
+import util.world
 
 import carla
 
@@ -31,16 +34,18 @@ def parse_arguments():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     argparser.add_argument(
-        '-s',
-        '--seed',
-        default=None,
-        help='The random number seed used during scenario generation'
-    )
-    argparser.add_argument(
         '--host',
         metavar='H',
         default='127.0.0.1',
         help='The ip address of the host server'
+    )
+    argparser.add_argument(
+        '-n',
+        '--num-agents',
+        metavar='N',
+        default=10,
+        type=int,
+        help='The maximum number of non-player agents in the scenario'
     )
     argparser.add_argument(
         '--port',
@@ -48,6 +53,13 @@ def parse_arguments():
         default=2000,
         type=int,
         help='TCP port used for listening'
+    )
+    argparser.add_argument(
+        '-s',
+        '--seed',
+        metavar='S',
+        default=None,
+        help='The random number seed used during scenario generation'
     )
     argparser.add_argument(
         '-t',
@@ -64,7 +76,7 @@ def parse_arguments():
     return args
 
 
-def spawn_traffic_circle_agents(max_agents, world, verbose=False):
+def spawn_traffic_circle_agents(max_agents, actors, world, verbose=False):
     '''
     Continuously spawns agents around the traffic circle in Town03.
 
@@ -72,6 +84,8 @@ def spawn_traffic_circle_agents(max_agents, world, verbose=False):
     ----------
     max_agents : int
         The maximum number of agents allowed in the scenario at any given time.
+    actors : list
+        A list of actors that have been spawned into the Carla world
     world : carla.World
         The Carla world in which to spawn actors.
     verbose : bool, optional
@@ -81,50 +95,56 @@ def spawn_traffic_circle_agents(max_agents, world, verbose=False):
 
     spawn_points = world.get_map().get_spawn_points()
     sp_indices = [
-        8, 112, 113, 120, 121, 122, 123, 210, 211, 218, 219, 229, 247, 248
+        8, 9, 47, 48, 55, 56, 57, 58, 145, 146, 153, 154, 164, 182, 183
     ]
 
-    while True:
-        num_agents = len(world.get_actors().filter('vehicle.*'))
+    num_agents = len(actors)
 
-        if num_agents < max_agents:
-            cc.spawn_actor(
-                world,
-                blueprints,
-                spawn_points[random.choice(sp_indices)],
-                verbose
-            )
-            cc.sleep_random_time(verbose=verbose)
+    while num_agents < max_agents:
+        actor = util.world.spawn_actor(
+            world,
+            blueprints,
+            spawn_points[random.choice(sp_indices)],
+            verbose
+        )
+
+        if actor:
+            actors.append(actor)
+
+        util.common.sleep_random_time(verbose=verbose)
+        num_agents = len(actors)
 
 
-def remove_non_traffic_circle_agents(world, verbose=False):
+def remove_non_traffic_circle_agents(actors, verbose=False):
     '''
-    Monitors the Carla world and actively removes any agents that have
+    Monitors the Carla scene and actively removes the agents that have
     wondered too far away from the traffic circle in Town03.
 
     Parameters
     ----------
-    world : carla.World
-        The Carla world in which to remove actors.
+    actors : list
+        A list of actors that have been spawned into the Carla world
     verbose : bool, optional
         Used to determine whether some information should be displayed.
     '''
     circle_center = carla.Location(0, 0, 0) # map/circle center
     dist_from_center = 100.0 # 100 meters from traffic circle center
 
-    while True:
-        cc.remove_distant_actors(
-            world,
+    if verbose:
+        print("Number of agents:", len(actors))
+
+    for actor in actors:
+        if not util.actor.in_range(
+            actor,
             circle_center,
             dist_from_center,
-            'vehicle.*',
             verbose
-        )
+        ):
+            actor.destroy()
+            actors.remove(actor)
 
-        if verbose:
-            print('Sleeping for 5.0 seconds.')
-            
-        time.sleep(5.0)
+    if verbose:
+        print("Number of agents after removal:", len(actors))
 
 
 def event_4(args):
@@ -137,16 +157,18 @@ def event_4(args):
         A list of arguments used for the scenario generation.
     '''
     # Connect to the Carla server
-    client = cc.create_client(args.host, args.port, args.timeout)
+    client = util.client.create(args.host, args.port, args.timeout)
         
     # Use provided seed or system time if none is provided
     random.seed(a=args.seed)
 
     try:
         world = client.get_world()
-        
-        spawn_traffic_circle_agents(10, world, True)
-        remove_non_traffic_circle_agents(world, True)
+        actors = []
+
+        while True:
+            spawn_traffic_circle_agents(args.num_agents, actors, world, True)
+            remove_non_traffic_circle_agents(actors, True)
 
     finally:
         pass
