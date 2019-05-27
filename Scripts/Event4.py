@@ -69,6 +69,14 @@ def parse_arguments():
         type=float,
         help='Timeout, in seconds, of the Carla client when contacting server'
     )
+    argparser.add_argument(
+        '-v',
+        '--verbose',
+        dest='verbose',
+        default=False,
+        action='store_true',
+        help='Boolean to toggle the output of verbose information'
+    )
 
     args = argparser.parse_args()
     args.description = argparser.description
@@ -165,10 +173,11 @@ def event_4(args):
     try:
         world = client.get_world()
         actors = []
+        dbg = args.verbose
 
         while True:
-            spawn_traffic_circle_agents(args.num_agents, actors, world, True)
-            remove_non_traffic_circle_agents(actors, True)
+            spawn_traffic_circle_agents(args.num_agents, actors, world, dbg)
+            remove_non_traffic_circle_agents(actors, dbg)
 
     finally:
         pass
