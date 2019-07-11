@@ -1,18 +1,14 @@
 #!/bin/env/python
  
 import Event4
-import util.carla_common as cc
-
-import time
+import util.client
+import util.world
 
 def main():
-    client = cc.create_client()
+    client = util.client.create()
 
     world = client.get_world()
-
-    while True:
-        Event4.remove_non_traffic_circle_agents(world, verbose=True)
-        print('Total actors remaining:', len(world.get_actors().filter('vehicle.*')))
-        time.sleep(5.0)
+    for actor in world.get_actors().filter('vehicle.*'):
+        actor.destroy()
 
 main()

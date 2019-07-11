@@ -3,3 +3,4 @@
 *.swo
 *.orig
 *.pyc
+.env
