@@ -14,7 +14,12 @@ pip3 install --user -r requirements.txt
 ```
 
 ### Running the scenario
-Start by running a server instance of Carla (**version [0.9.5](https://github.com/carla-simulator/carla/releases/tag/0.9.5)**) with the default parameters. This can be done following the information found on [Carla's wiki](https://carla.readthedocs.io/en/latest/getting_started/).
+Start by running a server instance of Carla (**version [0.9.5](https://github.com/carla-simulator/carla/releases/tag/0.9.5)**) with the default parameters. This can be done following the information found on [Carla's wiki](https://carla.readthedocs.io/en/latest/getting_started/). As an example, you can run a Carla server instance in a windowed mode using the following command when in the Carla install directory:
+```
+bash
+./CarlaUE4.sh -windowed -ResX=1280 -ResY=720 -benchmark -fps=30
+```
+To better understand these arguments, see [Carla's documentation](https://carla.readthedocs.io/en/latest/configuring_the_simulation/) and [Unreal Engine's documentation](https://docs.unrealengine.com/en-US/Programming/Basics/CommandLineArguments/index.html) on the topic.
 
 Once the Carla server is running, you can run the scenario. Make sure you've followed the [environment instructions](#Setting-up-your-environment). Once your path is configured, to start the scenario, simply run
 ```bash
